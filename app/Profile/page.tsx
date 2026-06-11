@@ -31,7 +31,7 @@ export default function Home() {
         </div>
 
         {/* Features */}
-        <div className="mt-6 space-y-2 text-left">
+        <div className="mt-6 space-y-2 text-left text-gray-800">
           <p>✅ Control Hair Fall</p>
           <p>✅ Promote Hair Growth</p>
           <p>✅ Reduce Dandruff</p>
