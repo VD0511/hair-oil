@@ -1,6 +1,48 @@
+"use client";
 import Image from "next/image";
 
 export default function Home() {
+  const handlePayment = async () => {
+    try {
+      const response = await fetch("/api/create-order", {
+        method: "POST",
+      });
+
+      const order = await response.json();
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Inner Glow Wellness",
+        description: "Healing Hair Oil Formula",
+        order_id: order.id,
+
+        handler: async function (response: any) {
+          const verify = await fetch("/api/verify-payment", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(response),
+          });
+
+          const result = await verify.json();
+
+          if (result.success) {
+            window.location.href = "/success";
+          } else {
+            alert("Payment verification failed");
+          }
+        },
+      };
+
+      const razorpay = new (window as any).Razorpay(options);
+      razorpay.open();
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <main className="min-h-screen bg-gradient-to-b from-green-900 to-green-700 flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-white rounded-[30px] shadow-2xl p-6 md:p-8 text-center">
@@ -18,7 +60,7 @@ export default function Home() {
 
         {/* Product Name */}
         <h1 className="text-3xl font-bold text-gray-900 mt-6">
-          Healing Hair Oil Making Formula
+          Fast Hair Growth Formula
         </h1>
 
         <p className="text-gray-500 mt-2">100% Natural Hair Growth Formula</p>
@@ -39,14 +81,12 @@ export default function Home() {
         </div>
 
         {/* Buy Button */}
-        <a
-          href="https://razorpay.me/@InnerGlowwellness8735?amount=jXBEDYv%2F7QTMviIWWwt41Q%3D%3D"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          onClick={handlePayment}
           className="block w-full mt-8 bg-green-700 hover:bg-green-800 text-white py-4 rounded-2xl font-bold text-lg text-center"
         >
           Buy Now
-        </a>
+        </button>
 
         {/* WhatsApp Order */}
         <a
